@@ -26,12 +26,15 @@ class Client(Thread):
             
             dataArray = data.split(',')
             msg = ""
+            
 
             if dataArray[0] == '1':
                 print(' [x] Se recibió el archivo: ', dataArray[1])
                 file = open('server_files/' + dataArray[1], "w")# w -> write
                 file.write(dataArray[2])
                 file.close()
+                node(key, dataArray[1])
+                key = key + 1
                 msg = ' [x] El archivo se guardo correctamente!'
                 self.conn.send(msg.encode())
 
@@ -48,7 +51,21 @@ class Client(Thread):
             #self.conn.send(datos.encode())
         print(' [x] Hasta luego...')
         self.conn.close() #Termina la conexión con el cliente
-        
+
+    
+def node(key, value):
+    hash = {}
+    node1 = []
+    node2 = []
+    node3 = []
+
+    hash[key] = value
+    node1.append(hash)
+
+    for n in node1:
+        print(n)
+
+
 def Main():
     
     mySocket = socket() #Se llama al método socket
