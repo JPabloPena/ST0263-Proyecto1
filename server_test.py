@@ -2,7 +2,7 @@ from os import pipe
 import sys
 from socket import socket, error
 from threading import Thread
-import os
+from client import *
 
 #Clase para conectarse con múltiples clientes al tiempo
 class Client(Thread):
@@ -33,50 +33,29 @@ class Client(Thread):
                 file = open('server_files/' + dataArray[1], "w")# w -> write
                 file.write(dataArray[2])
                 file.close()
-
+                #H= Client()
+               # H.Insert("hoa.txt")
+                
+                #key= add(self,dataArray[1],dataArray[1])
+                key=getHash(dataArray[1])
+               # print(key)
+                #print(get(self,dataArray[1]))
+                node(key, dataArray[1])
+                #key = key + 1
                 msg = ' [x] El archivo se guardo correctamente!'
                 self.conn.send(msg.encode())
 
             elif dataArray[0] == '2':
-                print(' [x] Archivo a eliminar: ', dataArray[1])
-                filename = 'server_files/' + dataArray[1]
-
-                if os.path.exists(filename):                  
-                    os.remove(filename)
-                    msg = ' [x] Se eliminó el archivo: ' + dataArray[1]
-                else:
-                    msg = ' [x] El archivo ' + dataArray[1] + ' no existe!'
-                
-                self.conn.send(msg.encode())
+                print(' [x] Se eliminó el archivo: ', dataArray[1])
 
             elif dataArray[0] == '3':
-                print(' [x] Archivo a actualizar: ', dataArray[1])
-                file = open('server_files/' + dataArray[1], "w")# w -> write
-                file.write(dataArray[2])
-                file.close()
-
-                msg = ' [x] El archivo se actualizó correctamente!'
-                self.conn.send(msg.encode())
+                print(' [x] Se descargó el archivo: ', dataArray[1])
             
-            elif dataArray[0] == '4':
-                print(' [x] Archivo a descargar: ', dataArray[1])
-                filename = 'server_files/'+ dataArray[1]
-
-                if os.path.exists(filename):
-                    file = open(filename, "r") # r -> read
-                    data = file.read()
-                    file.close()
-                    msg = '1' + ',' +' [x] Se descargó el archivo: ' + dataArray[1] + ',' + data 
-                else:
-                    msg = '0' + ',' + ' [x] El archivo ' + dataArray[1] + ' no existe!'
-
-                self.conn.send(msg.encode())
-            
-            elif dataArray[0] == '5':
-                msg = ' [x] Hasta luego...'
-                self.conn.send(msg.encode())
-                break
-
+            #file = open('server_files/' + filename, "w") # w -> write
+            #file.write(data)
+            #file.close()
+            break
+            #self.conn.send(datos.encode())
         print(' [x] Hasta luego...')
         self.conn.close() #Termina la conexión con el cliente
 
@@ -89,10 +68,8 @@ def Main():
     #mySocket.bind( ('172.31.15.122', 3000) )
     #mySocket.bind( (host, port) ) #Escucha la conexión con el cliente
     mySocket.listen(5) #Define cuantos clientes se pueden conectar al servidor al mismo tiempo
-    
-    key = 0
-
     print('------ Runnning Server Application ------')
+    cliente = prueba() #método importado desde el cliente
     
     while True:
         conn, addr = mySocket.accept()
@@ -100,15 +77,6 @@ def Main():
 
         c = Client(conn, addr) #Crea el hilo con el cliente
         c.start() #Empieza la conexión con el cliente
-
-def node(key, value):
-    node1 = []
-    hash = {}
-    hash[key] = value
-    node1.append(hash)
-    print(node1[0])
-    for n in node1:
-        print(n)
 
 def parameters():
 
@@ -126,3 +94,68 @@ def parameters():
 
 if __name__ == '__main__':
     Main()
+
+
+
+
+
+def Hash_func(self, value):
+        key = 0
+        for i in range(0,len(value)):
+            key += ord(value[i])
+        return key % 127
+
+def Insert(self, value): # Metodo para ingresar elementos
+    hash = self.Hash_func(value)
+    if self.table[hash] is None:
+        self.table[hash] = value
+   
+def Search(self,value): # Metodo para buscar elementos
+        hash = self.Hash_func(value)
+        if self.table[hash] is None:
+            return None
+        else:
+            return hex(id(self.table[hash]))
+  
+def Remove(self,value): # Metodo para eleminar elementos
+        hash = self.Hash_func(value)
+        if self.table[hash] is None:
+            print("No hay elementos con ese valor", value)
+        else:
+            print("Elemento con valor", value, "eliminado")
+            self.table[hash] is None
+        
+
+
+def getHash(key):
+    h = 0
+    for char in key:
+        h += ord(char)
+    #print (h)
+    return h % 100
+
+def add(self,key,val):
+    h=self.getHash(key)
+    self.arr[h]=val
+
+def get(self, key):
+    h=self.getHash(key)
+    return self.arr[h]
+
+
+
+node1 = []
+node2 = []
+node3 = []
+def node(key, value):
+    hash = {}
+    count = 0
+    hash[key] = value
+    node1.append(hash)
+    print(node1[0])
+    for n in node1:
+        #if(n!=NULL):
+          count= count+1
+          print(n)
+    print(count)
+
