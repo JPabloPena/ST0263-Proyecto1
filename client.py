@@ -1,14 +1,14 @@
-from os import pardir
-from socket import socket
+import socket
 import sys
+from os import pardir
 
-#Método que posee toda la lógica de negocio
-def Client():
+
+def client():
 
     #server, port = parameters()    
 
-    mySocket = socket() #Se llama al método socket
-    #mySocket.connect( (server, int(port)) ) #Se establece una conexión con el servidor mediante el método socket recibiendo un servidor y puerto
+    mySocket = socket.socket() #Se llama al método socket
+    #mySocket.connect( (server, int(port)) )
     mySocket.connect( ('localhost', 8000) )
     #mySocket.connect( ('35.153.31.234', 3000) )
 
@@ -25,16 +25,16 @@ def Client():
         if operation == '1':
             print(' [x] Escriba el nombre del archivo que desea guardar: ')
             filename = input(" >")
+            key = filename[0].lower()
             newFilename = filename
             filename = 'client_files/' + filename 
             file = open(filename, "r") # r -> read
             data = file.read()
             file.close()
-            msg = operation + ',' + newFilename + ',' + data
+            msg = operation + '||' + key + '||' + newFilename + '||' + data
             mySocket.send(msg.encode())
             serverData = mySocket.recv(1024).decode()
             print(serverData)          
-            break
 
         elif operation == '2':
             print(' [x] Escriba el nombre del archivo que desea eliminar: ')
@@ -88,10 +88,6 @@ def Client():
         else:
             print(' [x] Operación no válida, intente de nuevo:')
 
-        #mySocket.send("file_test.txt".encode())
-        #mySocket.send(data.encode())
-        #serverData = mySocket.recv(1024).decode()
-
     mySocket.close() #Se termina la conexión con el servidor
 
 
@@ -108,9 +104,6 @@ def parameters():
 
     return server, port
 
-def prueba():
-    print('Este es un mensaje desde el cliente')
-
 if __name__ == '__main__':
-    Client()
+    client()
     

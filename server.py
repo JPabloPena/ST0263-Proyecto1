@@ -1,114 +1,53 @@
-from os import pipe
 import sys
-from socket import socket, error
-from threading import Thread
-import os
+from _thread import *
+import socket
 
-#Clase para conectarse con múltiples clientes al tiempo
-class Client(Thread):
+from node import node
 
-    #Método para indentificar cada cliente que se conecta al servidor
-    def __init__(self, conn, addr):
-        Thread.__init__(self) #Crea el hilo para el cliente
+nodes = {
+    'node1' : ('54.221.31.193', 8000),
+    'node2' : ('54.174.113.253', 8000),
+    'node3' : ('localhost', 8000) 
+}
 
-        self.conn = conn #Guarda la conexión
-        self.addr = addr #Guarda la dirección de la conexión
-    
-    #Método que posee toda la lógica de negocio
-    def run(self):
-        
-        while True:
-
-            try:
-                data = self.conn.recv(1024).decode()
-            except error:
-                print("[%s] Error de lectura." % self.name)
-                break
-            
-            dataArray = data.split(',')
-            msg = ""
-            
-            if dataArray[0] == '1':
-                print(' [x] Se recibió el archivo: ', dataArray[1])
-                file = open('server_files/' + dataArray[1], "w")# w -> write
-                file.write(dataArray[2])
-                file.close()
-
-                msg = ' [x] El archivo se guardo correctamente!'
-                self.conn.send(msg.encode())
-
-            elif dataArray[0] == '2':
-                print(' [x] Archivo a eliminar: ', dataArray[1])
-                filename = 'server_files/' + dataArray[1]
-
-                if os.path.exists(filename):                  
-                    os.remove(filename)
-                    msg = ' [x] Se eliminó el archivo: ' + dataArray[1]
-                else:
-                    msg = ' [x] El archivo ' + dataArray[1] + ' no existe!'
-                
-                self.conn.send(msg.encode())
-
-            elif dataArray[0] == '3':
-                print(' [x] Archivo a actualizar: ', dataArray[1])
-                file = open('server_files/' + dataArray[1], "w")# w -> write
-                file.write(dataArray[2])
-                file.close()
-
-                msg = ' [x] El archivo se actualizó correctamente!'
-                self.conn.send(msg.encode())
-            
-            elif dataArray[0] == '4':
-                print(' [x] Archivo a descargar: ', dataArray[1])
-                filename = 'server_files/'+ dataArray[1]
-
-                if os.path.exists(filename):
-                    file = open(filename, "r") # r -> read
-                    data = file.read()
-                    file.close()
-                    msg = '1' + ',' +' [x] Se descargó el archivo: ' + dataArray[1] + ',' + data 
-                else:
-                    msg = '0' + ',' + ' [x] El archivo ' + dataArray[1] + ' no existe!'
-
-                self.conn.send(msg.encode())
-            
-            elif dataArray[0] == '5':
-                msg = ' [x] Hasta luego...'
-                self.conn.send(msg.encode())
-                break
-
-        print(' [x] Hasta luego...')
-        self.conn.close() #Termina la conexión con el cliente
-
-def Main():
-    
-    mySocket = socket() #Se llama al método socket
-    host = '0.0.0.0'
-    #port = int(parameters())
-    mySocket.bind( ('localhost', 8000) )
-    #mySocket.bind( ('172.31.15.122', 3000) )
-    #mySocket.bind( (host, port) ) #Escucha la conexión con el cliente
-    mySocket.listen(5) #Define cuantos clientes se pueden conectar al servidor al mismo tiempo
-    
-    key = 0
-
-    print('------ Runnning Server Application ------')
-    
+def server(client):
     while True:
-        conn, addr = mySocket.accept()
-        print(" [x] Conexión desde: " + str(addr))
 
-        c = Client(conn, addr) #Crea el hilo con el cliente
-        c.start() #Empieza la conexión con el cliente
+        try:
+            dataClient = client.recv(1024).decode()
+        except error:
+            print('Error de lectura.')
+            break
+        
+        if len(dataClient):
+            dataClientArray = dataClient.split('||')
+            host_node, port = chooseNode(dataClientArray[1])
+            sendToNode(dataClient, host_node, port)
 
-def node(key, value):
-    node1 = []
-    hash = {}
-    hash[key] = value
-    node1.append(hash)
-    print(node1[0])
-    for n in node1:
-        print(n)
+def convertToAscii(letter):
+    num = ord(letter)
+    return num
+
+def chooseNode(key):
+    newKey = convertToAscii(key)
+
+    if newKey >= 97 and newKey <= 104: #8 letras (a-h)
+        return nodes['node1']
+    elif newKey >= 105 and newKey <= 113: #9 letras (i-q)
+        return nodes['node2']
+    elif newKey >= 114 and newKey <= 122: #9 letras (r-z)
+        return nodes['node3']
+    else:
+        return nodes['node3']
+
+def sendToNode(data, host_node, port):
+    nodeSocket = socket.socket()
+    nodeSocket.connect( (host_node, port) )
+    nodeSocket.send(data.encode())
+    dataNode = nodeSocket.recv(1024).decode()
+    print(dataNode)
+    conn.send(dataNode.encode())
+    nodeSocket.close()
 
 def parameters():
 
@@ -117,7 +56,7 @@ def parameters():
         print(' [x] Port:', port)
         
     else:
-        port = '3000'
+        port = '8000'
         print(' [x] Se estableción el puerto', port, 'por defecto. Si desea usar otro puerto cierre la aplicación y recuerde ingresar:')
         print(' [x] Recuerder ingresar: $python3 server.py port')
         print(' [x] Ejemplo: $python3 server.py', port)
@@ -125,4 +64,21 @@ def parameters():
     return port
 
 if __name__ == '__main__':
-    Main()
+    try:
+        mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        host = '0.0.0.0'
+        #port = int(parameters())
+        mySocket.bind( (host, 8000) )
+        #mySocket.bind( ('172.31.15.122', 3000) )
+        #mySocket.bind( (host, port) ) 
+        mySocket.listen(5) 
+
+        print('------ Runnning Server Application ------')
+        
+        while True:
+            conn, addr = mySocket.accept()
+            print(" [x] Conexión desde: " + str(addr))
+            start_new_thread(server, (conn, ))
+
+    except Exception as error:
+        print(socket.error)
