@@ -45,7 +45,7 @@ def sendToNode(data, host_node, port):
     nodeSocket.connect( (host_node, port) )
     nodeSocket.send(data.encode())
     dataNode = nodeSocket.recv(1024).decode()
-    print(' [X] Enviando: ' + dataNode)
+    print(' [x] Enviando: ' + dataNode)
     conn.send(dataNode.encode())
     nodeSocket.close()
 
