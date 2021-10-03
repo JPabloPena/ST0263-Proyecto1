@@ -1,16 +1,13 @@
 import socket
 import sys
-from os import pardir
 
-
+#Método que hace la conexión con el servidor y le pregunta al cliente por las operaciones que desea realizar
 def client():
 
-    #server, port = parameters()    
+    server, port = parameters()    
 
     mySocket = socket.socket() #Se llama al método socket
-    #mySocket.connect( (server, int(port)) )
-    mySocket.connect( ('localhost', 8000) )
-    #mySocket.connect( ('35.153.31.234', 3000) )
+    mySocket.connect( (server, int(port)) )
 
     print('------ Runnning Client Application ------')
     print(' [x] ¿Qué operación desea realizar? Escriba únicamente el número: ')
@@ -23,7 +20,7 @@ def client():
         serverData = ""
 
         if operation == '1': #PUT
-            print(' [x] Escriba el nombre del archivo que desea guardar (ej: hola.txt): ')
+            print(' [x] Escriba el nombre del archivo que desea guardar (ej: color.txt): ')
             filename = input(" >")
             key = filename[0].lower()
             newFilename = filename
@@ -45,7 +42,7 @@ def client():
             print(serverData)
 
         elif operation == '3': #DELETE
-            print(' [x] Escriba el nombre del archivo que desea eliminar: ')
+            print(' [x] Escriba el nombre del archivo que desea eliminar (ej: color.txt): ')
             filename = input(" >")
             key = filename[0].lower()
             newFilename = filename
@@ -55,7 +52,7 @@ def client():
             print(serverData)
 
         elif operation == '4':
-            print(' [x] Escriba el nombre del archivo que desea actualizar: ')
+            print(' [x] Escriba el nombre del archivo que desea actualizar (ej: color.txt): ')
             filename = input(" >")
             key = filename[0].lower()
             newFilename = filename
@@ -69,12 +66,11 @@ def client():
             file.close()
         
         elif operation == '5':
-            print(' [x] Escriba el nombre del archivo que desea descargar: ')
+            print(' [x] Escriba el nombre del archivo que desea descargar (ej: color.txt): ')
             filename = input(" >")
             key = filename[0].lower()
             msg = operation + '||' + key + '||' + filename
             mySocket.send(msg.encode())
-
             serverData = mySocket.recv(1024).decode()
             dataArray = serverData.split('||')
 
@@ -96,6 +92,7 @@ def client():
         print( '\n [x] ¿Qué operación desea realizar? Escriba únicamente el número: ')
     mySocket.close() #Se termina la conexión con el servidor
 
+#Método que identifica los parámetros al ejecutar la aplicación
 def parameters():
     
     if len(sys.argv) == 3:
@@ -104,8 +101,8 @@ def parameters():
         print(' [x] Server:', server,'\n [x] Port:', port)
         
     else:
-        print(' [x] Recuerde ingresar: $python3 client.py ip-sever port')
-        print(' [x] Ejemplo: $python3 client.py 34.226.36.159 5672\n')
+        print(' [x] Recuerde ingresar: $python3 client.py <ip-sever> <port>')
+        print(' [x] Ejemplo: $python3 client.py 34.226.36.159 8000\n')
 
     return server, port
 

@@ -1,9 +1,12 @@
 import json
 import socket
+import sys
 import os
 from _thread import *
 
+#Método que recibe los datos del servidor y ejecuta la lógica del nodo
 def node(client):
+
     global dataClients
 
     dataClients = json.loads(getFile("data/dataclients.json"))
@@ -18,7 +21,9 @@ def node(client):
 
         operations(dataServer)
 
+#Método que ejecuta las operaciones solicitadas por el cliente
 def operations(dataServer):
+
     dataServerArray = dataServer.split('||')
 
     if dataServerArray[0] == '1':
@@ -77,18 +82,24 @@ def operations(dataServer):
             msg = '0' + '||' + ' [x] El archivo ' + dataServerArray[2] + ' no existe!'
         conn.send(msg.encode())
 
+#Método que obtiene toda la información del json para poder ser modificada
 def getFile(filename):
+
     file = open(filename, "r")
     data = file.read()
     file.close()
     return data
 
+#Método que guarda las modificaciones en el json
 def saveFile(filename, data):
+
     file = open(filename, "w")
     json.dump(data, file)
     file.close()
 
+#Método que guarda información en el json
 def save(key, filename, value):
+
     tuple = (filename, value)
     if key in dataClients.keys():
         dataClients[key].append(tuple)
@@ -97,7 +108,9 @@ def save(key, filename, value):
         dataClients[key].append(tuple)
     saveFile("data/dataclients.json", dataClients)
 
+#Método que obtiene los valores de una llave de acuerdo al json
 def get(key):
+
     msg = ""
     if key in dataClients.keys():
         msg = ' [x] ' + key + ': ' + ', '.join([str(elem) for elem in dataClients[key]])
@@ -106,7 +119,9 @@ def get(key):
         msg = ' [x] Clave no encontrada!'
         conn.send(msg.encode())
 
+#Método que elimina la información del json
 def delete(key, filename):
+
     cont = 0
     if key in dataClients.keys():
         for n in dataClients[key]:
@@ -118,8 +133,10 @@ def delete(key, filename):
     else:
         msg = ' [x] La clave del archivo no fue encontrada!'
         conn.send(msg.encode())
-    
+
+#Método que actualiza la información en el json
 def update(key, filename, value):
+
     cont = 0
     if key in dataClients.keys():
         for n in dataClients[key]:
@@ -131,16 +148,28 @@ def update(key, filename, value):
     else:
         msg = ' [x] La clave del archivo no fue encontrada!'
         conn.send(msg.encode()) 
-    
+
+#Método que identifica los parámetros al ejecutar la aplicación
+def parameters():
+
+    if len(sys.argv) == 2:
+        port = sys.argv[1]
+        print(' [x] Port:', port)
+        
+    else:
+        port = '8000'
+        print(' [x] Se estableción el puerto', port, 'por defecto. Si desea usar otro puerto cierre la aplicación y recuerde ingresar:')
+        print(' [x] Recuerder ingresar: $python3 node.py <port>')
+        print(' [x] Ejemplo: $python3 node.py', port)
+        
+    return port
 
 if __name__ == '__main__':
     try:
         mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host = '0.0.0.0'
-        #port = int(parameters())
-        mySocket.bind( (host, 8000) )
-        #mySocket.bind( ('172.31.15.122', 3000) )
-        #mySocket.bind( (host, port) ) 
+        port = int(parameters())
+        mySocket.bind( (host, port) ) 
         mySocket.listen(5) 
 
         print('------ Runnning Node Application ------')

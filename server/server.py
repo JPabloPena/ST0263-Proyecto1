@@ -1,16 +1,16 @@
+import socket
 import sys
 from _thread import *
-import socket
-
-from node import node
 
 nodes = {
-    'node1' : ('54.85.23.157', 8000),
-    'node2' : ('54.174.113.253', 8000),
-    'node3' : ('localhost', 8000) 
+    'node1' : ('52.87.120.212', 8000), #8 letras (a-h)
+    'node2' : ('54.198.25.186', 8000), #9 letras (i-q)
+    'node3' : ('54.152.23.75', 8000) #9 letras (r-z)
 }
 
+#Método que recibe los datos del cliente y ejecuta la lógica del servidor
 def server(client):
+
     while True:
 
         try:
@@ -24,11 +24,15 @@ def server(client):
             host_node, port = chooseNode(dataClientArray[1])
             sendToNode(dataClient, host_node, port)
 
+#Método que convierte la clave enviada por el cliente a número segun ASCII
 def convertToAscii(letter):
+
     num = ord(letter)
     return num
 
+#Método que elige a que nodo enviar la información según la clave
 def chooseNode(key):
+
     newKey = convertToAscii(key)
 
     if newKey >= 97 and newKey <= 104: #8 letras (a-h)
@@ -40,7 +44,9 @@ def chooseNode(key):
     else:
         return nodes['node3']
 
+#Método que envía la información del cliente al nodo y luego del servidor al cliente
 def sendToNode(data, host_node, port):
+
     nodeSocket = socket.socket()
     nodeSocket.connect( (host_node, port) )
     nodeSocket.send(data.encode())
@@ -49,6 +55,7 @@ def sendToNode(data, host_node, port):
     conn.send(dataNode.encode())
     nodeSocket.close()
 
+#Método que identifica los parámetros al ejecutar la aplicación
 def parameters():
 
     if len(sys.argv) == 2:
@@ -58,7 +65,7 @@ def parameters():
     else:
         port = '8000'
         print(' [x] Se estableción el puerto', port, 'por defecto. Si desea usar otro puerto cierre la aplicación y recuerde ingresar:')
-        print(' [x] Recuerder ingresar: $python3 server.py port')
+        print(' [x] Recuerder ingresar: $python3 server.py <port>')
         print(' [x] Ejemplo: $python3 server.py', port)
         
     return port
@@ -67,10 +74,8 @@ if __name__ == '__main__':
     try:
         mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host = '0.0.0.0'
-        #port = int(parameters())
-        mySocket.bind( (host, 8000) )
-        #mySocket.bind( ('172.31.15.122', 3000) )
-        #mySocket.bind( (host, port) ) 
+        port = int(parameters())
+        mySocket.bind( (host, port) ) 
         mySocket.listen(5) 
 
         print('------ Runnning Server Application ------')
