@@ -15,6 +15,10 @@ Aplicación que permite a un usuario guardar, leer, eliminar, actualizar y desca
 # Detalles del diseño
 La aplicación fue desarrollada en _Python_ haciendo uso de _Sockets_ para permitir la comunicación. El servidor y los nodos fueron montados en _AWS Educate_.
 
+## Diagrama de Arquitectura básico
+
+![](https://i.ibb.co/j5mw8dm/Whats-App-Image-2021-10-03-at-6-25-49-PM.jpg)
+
 ## Cliente
 - La aplicación _client.py_ se encarga de hacer la conexión con el servidor a través de _Sockets_ y permite al usuario ejecutar la operación que desee como se indica en la aplicación misma.
 - El cliente siempre envía mínimo la operación que desea ejecutar y una clave.
@@ -108,6 +112,6 @@ $ python3 client.py <ip-server> <port>
 ```
 Para mi caso fue:
 ```
-$ python3 publisher.py 54.165.5.52 8000
+$ python3 client.py 54.165.5.52 8000
 ```
 Ya tiene su cliente corriendo! Para ejecutar las operaciones, siga las instrucciones que da la aplicación.
