@@ -108,6 +108,6 @@ $ python3 client.py <ip-server> <port>
 ```
 Para mi caso fue:
 ```
-$ python3 publisher.py 54.152.39.112 8000
+$ python3 publisher.py 54.165.5.52 8000
 ```
 Ya tiene su cliente corriendo! Para ejecutar las operaciones, siga las instrucciones que da la aplicación.
