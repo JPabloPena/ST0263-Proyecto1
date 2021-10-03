@@ -24,7 +24,7 @@ La aplicación fue desarrollada en _Python_ haciendo uso de _Sockets_ para permi
 ## Servidor
 - La aplicación _server.py_ se encarga de recibir por medio de _Sockets_ los datos enviados por el usuario y decidir que nodo va a ser el responsable de trabajar con la información.
 - Para decidir que nodo usar, lo que hicimos fue tomar la clave que envió el usuario y pasarla a código _ASCII_. Luego de tener el número de la letra según ASCII, el servidor le asginó 8 letras al primer nodo (a..h), 9 letras para el segundo nodo (i..q) y 9 letras para el tercer nodo (r..z). Entonces, en el caso de tener la clave _'t'_, el servidor elegiría al tercer nodo para hacer la operación requerida por el usuario.
-- Tras elegir el nodo, el servidor le envía a través de _Sockets_ la operación solicitada por el usuario. 
+- Tras elegir el nodo, el servidor le envía al nodo a través de _Sockets_ la operación solicitada por el usuario. 
 
 ## Nodo
 - La aplicación _node.py_ se encarga de recibir por medio de _Sockets_ la información enviada por el servidor para ejecutarla y enviarle respuesta, para que así mismo le devuelva la respuesta al usuario que solicitó la operación.
