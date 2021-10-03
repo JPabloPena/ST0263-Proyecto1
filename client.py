@@ -14,7 +14,7 @@ def client():
 
     print('------ Runnning Client Application ------')
     print(' [x] ¿Qué operación desea realizar? Escriba únicamente el número: ')
-    print('      1. Guardar \n      2. Eliminar \n      3. Actualizar \n      4. Descargar \n      5. Salir de la aplicación ')
+    print('      1. Guardar \n      2. Ver archivos \n      3. Eliminar \n      4. Actualizar \n      5. Descargar \n      6. Salir de la aplicación ')
          
     while True:
 
@@ -22,8 +22,8 @@ def client():
         msg = ""
         serverData = ""
 
-        if operation == '1':
-            print(' [x] Escriba el nombre del archivo que desea guardar: ')
+        if operation == '1': #PUT
+            print(' [x] Escriba el nombre del archivo que desea guardar (ej: hola.txt): ')
             filename = input(" >")
             key = filename[0].lower()
             newFilename = filename
@@ -36,38 +36,47 @@ def client():
             serverData = mySocket.recv(1024).decode()
             print(serverData)          
 
-        elif operation == '2':
-            print(' [x] Escriba el nombre del archivo que desea eliminar: ')
-            filename = input(" >")
-            msg = operation + ',' + filename
+        elif operation == '2': #GET
+            print(' [x] Escriba la clave para ver los archivos disponibles (solo una letra): ')
+            key = input(" >")
+            msg = operation + '||' + key
             mySocket.send(msg.encode())
             serverData = mySocket.recv(1024).decode()
             print(serverData)
 
-            print('\n [x] ¿Qué operación desea realizar? Escriba únicamente el número: ')
+        elif operation == '3': #DELETE
+            print(' [x] Escriba el nombre del archivo que desea eliminar: ')
+            filename = input(" >")
+            key = filename[0].lower()
+            newFilename = filename
+            msg = operation + '||' + key + '||' + newFilename
+            mySocket.send(msg.encode())
+            serverData = mySocket.recv(1024).decode()
+            print(serverData)
 
-        elif operation == '3':
+        elif operation == '4':
             print(' [x] Escriba el nombre del archivo que desea actualizar: ')
             filename = input(" >")
+            key = filename[0].lower()
             newFilename = filename
             filename = 'client_files/' + filename 
             file = open(filename, "r") # r -> read
             data = file.read()
-            msg = operation + ',' + newFilename + ',' + data
+            msg = operation + '||' + key + '||' + newFilename + '||' + data
             mySocket.send(msg.encode())
             serverData = mySocket.recv(1024).decode()
             print(serverData)
             file.close()
-            break
         
-        elif operation == '4':
+        elif operation == '5':
             print(' [x] Escriba el nombre del archivo que desea descargar: ')
             filename = input(" >")
-            msg = operation + ',' + filename
+            key = filename[0].lower()
+            msg = operation + '||' + key + '||' + filename
             mySocket.send(msg.encode())
 
             serverData = mySocket.recv(1024).decode()
-            dataArray = serverData.split(',')
+            dataArray = serverData.split('||')
 
             if dataArray[0] == '1':
                 file = open('client_files/' + filename, "w")# w -> write
@@ -76,23 +85,19 @@ def client():
                 print(dataArray[1])                
             elif dataArray[0] == '0':
                 print(dataArray[1])
-            break
 
-        elif operation == '5':
-            msg = operation
-            mySocket.send(msg.encode())
-            serverData = mySocket.recv(1024).decode()
-            print(serverData)
+        elif operation == '6':
+            print(' [x] Hasta luego...')
             break
 
         else:
             print(' [x] Operación no válida, intente de nuevo:')
 
+        print( '\n [x] ¿Qué operación desea realizar? Escriba únicamente el número: ')
     mySocket.close() #Se termina la conexión con el servidor
 
-
 def parameters():
-
+    
     if len(sys.argv) == 3:
         server = sys.argv[1]
         port = sys.argv[2]

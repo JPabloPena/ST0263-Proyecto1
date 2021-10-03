@@ -1,6 +1,5 @@
 .gitignore
 test.py
-client_files
 server_files
 node_test.py
 server_test.py

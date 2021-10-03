@@ -5,7 +5,7 @@ import socket
 from node import node
 
 nodes = {
-    'node1' : ('54.221.31.193', 8000),
+    'node1' : ('54.85.23.157', 8000),
     'node2' : ('54.174.113.253', 8000),
     'node3' : ('localhost', 8000) 
 }
@@ -45,7 +45,7 @@ def sendToNode(data, host_node, port):
     nodeSocket.connect( (host_node, port) )
     nodeSocket.send(data.encode())
     dataNode = nodeSocket.recv(1024).decode()
-    print(dataNode)
+    print(' [X] Enviando: ' + dataNode)
     conn.send(dataNode.encode())
     nodeSocket.close()
 
