@@ -43,66 +43,71 @@ $ sudo yum install git
 ```
 Ya para clonarlo debe usar:
 ```
-$ git clone https://github.com/JPabloPena/ST0263jppenaf.git
-```
-Luego, debe instalar el módulo _pika_, para hacerlo, primero debe instalar pip:
-```
-$ sudo yum install pip
-```
-Finalmente, instala el módulo _pika_ de este modo:
-```
-$ pip3 install pika
+$ git clone https://github.com/JPabloPena/ST0263-Proyecto1.git
 ```
 
 # Ejecución
-## Cliente (_publisher.py_)
-Para ejecutar el cliente debe:
-```
-$ python3 publisher.py <ip-server> <port>
-```
-El _ip-server_ y _port_ son del servidor de _RabbitMQ_. Ejemplo, para conectarse con mi _RabbitMQ_:
+Primero debe ejecutar el servidor, luego los nodos y por último el cliente.
 
-_ip-server:_ 34.226.36.159
+## Servidor (_server.py_)
+Para ejecutar el servidor debe acceder al archivo _server.py_ que se encuentra en la carpeta _server_ y modificar las direcciones IP que tiene para sus nodos. Lo puede hacer de la siguiente manera:
+```
+$ cd ST0263-Proyecto1/server/
+$ nano server.py
+```
+Remplace _ip-node_ por la IP de su nodo (sin quitar las comillas) y remplace _port_ por el puerto de su nodo.
+```
+nodes = {
+    'node1' : ('ip-node', port),
+    'node2' : ('ip-node', port),
+    'node3' : ('ip-node', port)
+}
+```
+Para guardar presione Ctrl+s Ctrl+x.
 
-_port:_ 5672
+Ya puede proceder a ejecutar el servidor de la siguiente manera:
 ```
-$ python3 publisher.py 34.226.36.159 5672
+$ python3 server.py <port>
 ```
-Luego, al ejecutar se le pedirá el usuario y contraseña de RabbitMQ, que para el laboratorio 4 son _user_ y _password_ respectivamente:
+Para mi caso fue:
 ```
-Usuario de RabbitMQ:
- >user
-Contraseña de RabbitMQ:
- >password
+$ python3 server.py 8000
 ```
-Después, se le pedirá un usuario y un email en los cuales puede poner lo que desee:
-```
- [x] Escriba su nombre de usuario:
- >prueba123
- 
- [x] Escriba su email:
- >prueba@prueba.com
-```
-Finalmente, podrá enviar tareas a la cola escribiendo únicamente un número como se indica en la aplicación.
+Ya tiene su servidor corriendo!
 
-## Servidor (_subscriber.py_)
-Para ejecutar el servidor debe:
+## Nodo (_node.py_)
+Para ejecutar un nodo, primero debe acceder a la carpeta _node_ y luego ejecutar el siguiente comando:
 ```
-$ python3 subscriber.py <ip-server> <port>
+$ cd ST0263-Proyecto1/node/
+$ python3 node.py <port>
 ```
-El _ip-server_ y _port_ son del servidor de _RabbitMQ_. Ejemplo, para conectarse con mi _RabbitMQ_:
+Para mi caso fue:
+```
+$ python3 node.py 8000
+```
+Ya tiene su nodo corriendo!
 
-_ip-server:_ 34.226.36.159
-
-_port:_ 5672
+## Cliente (_client.py_)
+Para ejecutar el cliente, primero debe acceder a la carpeta _client_, luego si desea guardar archivos en los nodos debe acceder a la carpeta _client_files_ y guardar los archivos allí, para hacerlo ejecute los siguientes comandos:
 ```
-$ python3 subscriber.py 34.226.36.159 5672
+$ cd ST0263-Proyecto1/node/
+$ cd client_files/
 ```
-Luego, al ejecutar se le pedirá el usuario y contraseña de RabbitMQ, que para el laboratorio 4 son _user_ y _password_ respectivamente:
+La carpeta _client_files_ ya viene con unos archivos para que los pueda usar como prueba si desea. Para verlos ejecute dentro de la carpeta:
 ```
-Usuario de RabbitMQ:
- >user
-Contraseña de RabbitMQ:
- >password
+$ ls
+color.txt  lamp.txt  soup.txt
 ```
-Finalmente, el servidor ejecutará automáticamente todas las tareas que se encuentren en la cola.
+Para salir de _client_files_ ejecute:
+```
+$ cd ..
+```
+Ya para iniciar el cliente debe ejecutar el siguiente comando estando en la carpeta _client_:
+```
+$ python3 client.py <ip-server> <port>
+```
+Para mi caso fue:
+```
+$ python3 publisher.py 54.152.39.112 8000
+```
+Ya tiene su cliente corriendo! Para ejecutar las operaciones, siga las instrucciones que da la aplicación.
